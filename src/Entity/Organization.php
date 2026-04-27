@@ -20,7 +20,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Survos\OutreachBundle\Entity\Enum\OrganizationStatus;
 use Survos\OutreachBundle\Entity\Traits\TaggableTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Survos\FieldBundle\Attribute\EntityMeta;
+use Survos\FieldBundle\Attribute\Field;
 
+#[EntityMeta(icon: 'mdi:domain', group: 'Outreach')]
 #[ApiResource(
     operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
     normalizationContext: ['groups' => ['organization:read']],
@@ -49,10 +52,12 @@ class Organization
 
     #[ORM\Column(name: 'org_key', length: 191)]
     #[Groups(['organization:read', 'organization:write', 'contact:read'])]
+    #[Field(searchable: true, sortable: true)]
     private string $key = '';
 
     #[ORM\Column(length: 255)]
     #[Groups(['organization:read', 'organization:write', 'contact:read', 'activity:read', 'organization_system:read'])]
+    #[Field(searchable: true, sortable: true)]
     private string $name = '';
 
     #[ORM\Column(length: 255, nullable: true)]

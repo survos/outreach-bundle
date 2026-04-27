@@ -101,5 +101,11 @@ final class SurvosOutreachBundle extends AbstractBundle
         $services->set(OutreachImportJsonlCommand::class)
             ->tag('console.command')
             ->public();
+
+        if (class_exists(\Survos\TablerBundle\Event\MenuEvent::class)) {
+            $services->set(\Survos\OutreachBundle\Menu\OutreachMenuSubscriber::class)
+                ->autowire()
+                ->autoconfigure();
+        }
     }
 }

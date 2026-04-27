@@ -20,7 +20,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Survos\OutreachBundle\Entity\Enum\ContactEmailStatus;
 use Survos\OutreachBundle\Entity\Traits\TaggableTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Survos\FieldBundle\Attribute\EntityMeta;
 
+#[EntityMeta(icon: 'mdi:card-account-mail-outline', group: 'Outreach')]
 #[ApiResource(
     operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
     normalizationContext: ['groups' => ['contact:read']],
