@@ -5,7 +5,7 @@
     "type": "symfony-bundle",
     "require": {
         "php": "^8.5",
-        "api-platform/doctrine-orm": "^4.2",
+        "api-platform/doctrine-orm": "^4.2 || ^5.0",
         "doctrine/doctrine-bundle": "^3.0",
         "doctrine/orm": "^3.3",
         "survos/import-bundle": "^2.5",
