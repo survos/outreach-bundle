@@ -9,6 +9,7 @@ use Survos\OutreachBundle\EventListener\OutreachImportConvertListener;
 use Survos\OutreachBundle\Service\ConferenceRegistrantUpserter;
 use Survos\OutreachBundle\Service\OrganizationKeyGuesser;
 use Survos\OutreachBundle\Service\OutreachRowMapper;
+use Survos\OutreachBundle\Service\SendPolicy;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -93,6 +94,9 @@ final class SurvosOutreachBundle extends AbstractBundle
             ->public();
 
         $services->set(ConferenceRegistrantUpserter::class)
+            ->public();
+
+        $services->set(SendPolicy::class)
             ->public();
 
         $services->set(OutreachImportConvertListener::class)

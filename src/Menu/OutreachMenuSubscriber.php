@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Survos\OutreachBundle\Menu;
 
 use Survos\OutreachBundle\Entity\Activity;
+use Survos\OutreachBundle\Entity\Audience;
 use Survos\OutreachBundle\Entity\Contact;
 use Survos\OutreachBundle\Entity\Organization;
+use Survos\OutreachBundle\Entity\Subscription;
 use Survos\TablerBundle\Event\MenuEvent;
 use Survos\TablerBundle\Menu\AbstractAdminMenuSubscriber;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -21,6 +23,8 @@ class OutreachMenuSubscriber extends AbstractAdminMenuSubscriber
             'Organizations' => Organization::class,
             'Contacts'      => Contact::class,
             'Activities'    => Activity::class,
+            'Audiences'     => Audience::class,
+            'Subscriptions' => Subscription::class,
         ];
     }
 

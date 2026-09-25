@@ -12,4 +12,9 @@ enum ActivityType: string
     case CONFERENCE = 'conference';
     case DEMO = 'demo';
     case VISIT = 'visit';
+    // consent history: one Activity per Subscription or ContactEmailStatus change
+    case CONSENT = 'consent';
+    case UNSUBSCRIBE = 'unsubscribe';
+    case BOUNCE = 'bounce';
+    case COMPLAINT = 'complaint';
 }
