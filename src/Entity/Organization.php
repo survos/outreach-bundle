@@ -25,6 +25,7 @@ use Survos\FieldBundle\Attribute\Field;
 
 #[EntityMeta(icon: 'mdi:domain', group: 'Outreach')]
 #[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
     operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
     normalizationContext: ['groups' => ['organization:read']],
     denormalizationContext: ['groups' => ['organization:write']],

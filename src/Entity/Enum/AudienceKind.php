@@ -15,4 +15,6 @@ enum AudienceKind: string
     case RELATIONSHIP = 'relationship';
     /** Bulk mail the contact opted into, e.g. the Museado Foundation newsletter. Requires confirmation. */
     case NEWSLETTER = 'newsletter';
+    /** Ongoing product/site news; consent is independent of site follows. */
+    case ANNOUNCEMENTS = 'announcements';
 }

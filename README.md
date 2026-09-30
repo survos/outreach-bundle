@@ -111,3 +111,48 @@ When `import:convert` sees the `outreach` tag, the bundle listens to row events 
 - `Email` -> `email`
 
 The second command imports the normalized JSONL into `Organization` and `Contact`, deduplicating organizations by the configured email-domain heuristic.
+
+## Consent groundwork (implementation checkpoint)
+
+Announcements are separate audiences, for example `survos-announcements` and
+`pressia-updates`, both using `AudienceKind::ANNOUNCEMENTS`. Each requires email
+confirmation. Following a site, bookmarking a story, or importing a contact does
+not grant this permission. API resources require `ROLE_ADMIN`.
+
+`ConsentManager` records requests, confirmation, audience unsubscribe and global
+outreach suppression as activities. `ConsentLinks` generates signed, purpose-bound
+links. Confirmation expires after seven days and is invalidated by a fresh opt-in
+or an address change. Unsubscribe links do not expire. GET renders a form; POST
+changes permission so email link scanners do not change it accidentally.
+
+The bundle now uses kit-bundle conventions. Consent routes are **disabled by
+default** while delivery/provider integration remains unfinished. To enable them
+in a consuming application:
+
+```yaml
+survos_outreach:
+    routes_enabled: true
+    public_base_url: 'https://pressia.org'
+    signing_secret: '%env(OUTREACH_SIGNING_SECRET)%'
+```
+
+Use a stable secret of at least 32 characters. Allow anonymous access to the
+configured `/outreach` prefix in the host security configuration: the signed link
+authorizes the action. Keep locale prefixes disabled for these generated URLs.
+
+Existing databases need a migration for `Subscription::consentVersion`: add a
+nullable 32-character column, backfill each existing row with an independently
+generated 16-byte random hex string, then make it non-nullable. Generate the
+migration in the consuming app using its naming strategy; this bundle does not
+automatically alter existing databases.
+
+This checkpoint does **not** implement confirmation email dispatch, a send worker,
+provider webhook synchronization, or campaign delivery. Those must enforce
+`SendPolicy` at send time, including in long-running workers. Provider selection
+is still under review. No mail is sent by enabling these services.
+
+Tests from the monorepo root:
+
+```bash
+vendor/bin/phpunit --no-configuration --bootstrap bu/outreach-bundle/tests/bootstrap.php bu/outreach-bundle/tests
+```

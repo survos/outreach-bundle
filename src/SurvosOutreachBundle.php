@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle;
 
-use Survos\OutreachBundle\Command\OutreachImportJsonlCommand;
+use Survos\Kit\AbstractSurvosBundle;
+use Survos\Kit\Traits\HasConfigurableRoutes;
+use Survos\Kit\Traits\HasDoctrineEntities;
+use Survos\OutreachBundle\Service\ConsentLinks;
+use Survos\OutreachBundle\Service\ConsentManager;
 use Survos\OutreachBundle\EventListener\OutreachImportConvertListener;
 use Survos\OutreachBundle\Service\ConferenceRegistrantUpserter;
 use Survos\OutreachBundle\Service\OrganizationKeyGuesser;
@@ -13,10 +17,16 @@ use Survos\OutreachBundle\Service\SendPolicy;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
-final class SurvosOutreachBundle extends AbstractBundle
+
+// Symfony\Component\HttpKernel\Bundle\Bundle <-- Flex auto-registration marker (see Survos\Kit\AbstractSurvosBundle)
+final class SurvosOutreachBundle extends AbstractSurvosBundle
 {
+    use HasConfigurableRoutes;
+    use HasDoctrineEntities;
+
+    protected function doctrineAlias(): string { return 'Outreach'; }
+
     protected string $extensionAlias = 'survos_outreach';
 
     public function getPath(): string
@@ -26,8 +36,11 @@ final class SurvosOutreachBundle extends AbstractBundle
 
     public function configure(DefinitionConfigurator $definition): void
     {
+        $this->addRouteOptions($definition->rootNode()->children(), '/outreach', false);
         $definition->rootNode()
             ->children()
+                ->scalarNode('signing_secret')->defaultValue('%kernel.secret%')->end()
+                ->scalarNode('public_base_url')->defaultValue('')->end()
                 ->arrayNode('personal_email_domains')
                     ->scalarPrototype()->end()
                     ->defaultValue([
@@ -55,21 +68,7 @@ final class SurvosOutreachBundle extends AbstractBundle
     {
         $entityDir = \dirname(__DIR__) . '/src/Entity';
 
-        if ($builder->hasExtension('doctrine')) {
-            $builder->prependExtensionConfig('doctrine', [
-                'orm' => [
-                    'mappings' => [
-                        'SurvosOutreachBundle' => [
-                            'is_bundle' => false,
-                            'type' => 'attribute',
-                            'dir' => $entityDir,
-                            'prefix' => 'Survos\\OutreachBundle\\Entity',
-                            'alias' => 'Outreach',
-                        ],
-                    ],
-                ],
-            ]);
-        }
+        parent::prependExtension($container, $builder);
 
         if ($builder->hasExtension('api_platform')) {
             $builder->prependExtensionConfig('api_platform', [
@@ -82,6 +81,7 @@ final class SurvosOutreachBundle extends AbstractBundle
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
+        parent::loadExtension($config, $container, $builder);
         $services = $container->services()->defaults()->autowire()->autoconfigure();
 
         $services->set(OrganizationKeyGuesser::class)
@@ -102,9 +102,11 @@ final class SurvosOutreachBundle extends AbstractBundle
         $services->set(OutreachImportConvertListener::class)
             ->public();
 
-        $services->set(OutreachImportJsonlCommand::class)
-            ->tag('console.command')
-            ->public();
+        $services->set(ConsentManager::class);
+        $services->set(ConsentLinks::class)
+            ->arg('$secret', $config['signing_secret'])
+            ->arg('$publicBaseUrl', $config['public_base_url'])
+            ->arg('$routePrefix', $config['route_prefix']);
 
         if (class_exists(\Survos\TablerBundle\Event\MenuEvent::class)) {
             $services->set(\Survos\OutreachBundle\Menu\OutreachMenuSubscriber::class)

@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
  */
 #[EntityMeta(icon: 'mdi:account-group-outline', group: 'Outreach')]
 #[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
     operations: [new Get(), new GetCollection(), new Post(), new Patch()],
     normalizationContext: ['groups' => ['audience:read']],
     denormalizationContext: ['groups' => ['audience:write']],
@@ -68,7 +69,7 @@ final class Audience
     }
 
     public bool $requiresConfirmation {
-        get => $this->kind === AudienceKind::NEWSLETTER;
+        get => in_array($this->kind, [AudienceKind::NEWSLETTER, AudienceKind::ANNOUNCEMENTS], true);
     }
 
     public function __toString(): string

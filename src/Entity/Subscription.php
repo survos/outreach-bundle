@@ -27,6 +27,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
  */
 #[EntityMeta(icon: 'mdi:email-check-outline', group: 'Outreach')]
 #[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
     operations: [new Get(), new GetCollection()],
     normalizationContext: ['groups' => ['subscription:read']],
 )]
@@ -76,6 +77,10 @@ final class Subscription
     #[Groups(['subscription:read'])]
     public private(set) ?ConsentSource $unsubscribeSource = null;
 
+    /** Changes on a fresh opt-in so old confirmation links cannot renew permission. */
+    #[ORM\Column(length: 32)]
+    public private(set) string $consentVersion;
+
     public function __construct(
         #[ORM\ManyToOne(targetEntity: Contact::class)]
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -92,6 +97,7 @@ final class Subscription
         public readonly ConsentSource $source,
     ) {
         $this->createdAt = new \DateTimeImmutable();
+        $this->consentVersion = bin2hex(random_bytes(16));
         $this->status = $audience->requiresConfirmation ? SubscriptionStatus::PENDING : SubscriptionStatus::ACTIVE;
     }
 
@@ -113,6 +119,7 @@ final class Subscription
 
     public function recordSend(): void
     {
+        if (!$this->isSendable) { throw new \LogicException("Permission is not active."); }
         $this->lastSentAt = new \DateTimeImmutable();
         if ($this->audience->kind === AudienceKind::ONE_TIME) {
             $this->status = SubscriptionStatus::USED;
@@ -143,6 +150,8 @@ final class Subscription
         }
         $this->status = $this->audience->requiresConfirmation ? SubscriptionStatus::PENDING : SubscriptionStatus::ACTIVE;
         $this->evidence = $evidence;
+        $this->consentVersion = bin2hex(random_bytes(16));
+        $this->confirmedAt = null;
         $this->unsubscribedAt = null;
         $this->unsubscribeSource = null;
     }

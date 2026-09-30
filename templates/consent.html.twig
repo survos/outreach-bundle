@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Email permission</title>
+<body><main style="max-width:38rem;margin:4rem auto;padding:1rem;font:1.1rem/1.6 system-ui">
+{% set label = action == 'confirm' ? 'Confirm email permission' : (action == 'stop' ? 'Stop all outreach emails' : 'Unsubscribe') %}
+<h1>{{ label }}</h1>
+{% if done %}
+<p>{{ action == 'confirm' ? (suppressed ? 'Email remains blocked for this contact. Contact the site owner if you want to change that.' : (confirmed ? 'Your email permission is confirmed.' : 'This permission is no longer active. Please submit a new opt-in request.')) : (action == 'stop' ? 'You will receive no further outreach emails from this service.' : 'You are unsubscribed from ' ~ audience ~ '.') }}</p>
+{% else %}
+<p>{{ action == 'stop' ? 'Stop outreach emails for all audiences on this service. Essential account emails are separate.' : 'This applies to ' ~ audience ~ '. Other audiences and your site preferences are unchanged.' }}</p>
+<form method="post"><button type="submit">{{ label }}</button></form>
+{% endif %}</main></body></html>

@@ -20,6 +20,7 @@ use Survos\OutreachBundle\Entity\Traits\TaggableTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
     operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
     normalizationContext: ['groups' => ['organization_system:read']],
     denormalizationContext: ['groups' => ['organization_system:write']],

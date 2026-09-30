@@ -24,6 +24,7 @@ use Survos\FieldBundle\Attribute\EntityMeta;
 
 #[EntityMeta(icon: 'mdi:card-account-mail-outline', group: 'Outreach')]
 #[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
     operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
     normalizationContext: ['groups' => ['contact:read']],
     denormalizationContext: ['groups' => ['contact:write']],
