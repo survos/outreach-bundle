@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -26,17 +27,22 @@ use Survos\FieldBundle\Attribute\Field;
 #[EntityMeta(icon: 'mdi:domain', group: 'Outreach')]
 #[ApiResource(
     security: "is_granted('ROLE_ADMIN')",
-    operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
+    operations: [
+        new Get(),
+        new GetCollection(parameters: [
+            'key' => new QueryParameter(filter: new ExactFilter(), property: 'key'),
+            'name' => new QueryParameter(filter: new PartialSearchFilter(), property: 'name'),
+            'status' => new QueryParameter(filter: new ExactFilter(), property: 'status'),
+            'systems.system' => new QueryParameter(filter: new ExactFilter(), property: 'systems.system'),
+            'order[:property]' => new QueryParameter(filter: new SortFilter(), properties: ['key', 'name', 'createdAt', 'updatedAt']),
+        ]),
+        new Post(),
+        new Patch(),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['organization:read']],
     denormalizationContext: ['groups' => ['organization:write']],
 )]
-#[ApiFilter(SearchFilter::class, properties: [
-    'key' => 'exact',
-    'name' => 'partial',
-    'status' => 'exact',
-    'systems.system' => 'exact',
-])]
-#[ApiFilter(OrderFilter::class, properties: ['key', 'name', 'createdAt', 'updatedAt'])]
 #[ORM\Entity]
 #[ORM\Table(name: 'outreach_organization')]
 #[ORM\UniqueConstraint(name: 'outreach_organization_key_uq', columns: ['org_key'])]

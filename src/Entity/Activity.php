@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Survos\OutreachBundle\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -25,20 +26,26 @@ use Survos\FieldBundle\Attribute\EntityMeta;
 #[EntityMeta(icon: 'mdi:timeline-outline', group: 'Outreach')]
 #[ApiResource(
     security: "is_granted('ROLE_ADMIN')",
-    operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
+    operations: [
+        new Get(),
+        new GetCollection(parameters: [
+            'organization.id' => new QueryParameter(filter: new ExactFilter(), property: 'organization.id'),
+            'contact.id' => new QueryParameter(filter: new ExactFilter(), property: 'contact.id'),
+            'type' => new QueryParameter(filter: new ExactFilter(), property: 'type'),
+            'direction' => new QueryParameter(filter: new ExactFilter(), property: 'direction'),
+            'performedBy' => new QueryParameter(filter: new ExactFilter(), property: 'performedBy'),
+            'subject' => new QueryParameter(filter: new PartialSearchFilter(), property: 'subject'),
+            'order[:property]' => new QueryParameter(filter: new SortFilter(), properties: ['occurredAt', 'createdAt']),
+            'occurredAt' => new QueryParameter(filter: new DateFilter(), property: 'occurredAt'),
+            'createdAt' => new QueryParameter(filter: new DateFilter(), property: 'createdAt'),
+        ]),
+        new Post(),
+        new Patch(),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['activity:read']],
     denormalizationContext: ['groups' => ['activity:write']],
 )]
-#[ApiFilter(SearchFilter::class, properties: [
-    'organization.id' => 'exact',
-    'contact.id' => 'exact',
-    'type' => 'exact',
-    'direction' => 'exact',
-    'performedBy' => 'exact',
-    'subject' => 'partial',
-])]
-#[ApiFilter(OrderFilter::class, properties: ['occurredAt', 'createdAt'])]
-#[ApiFilter(DateFilter::class, properties: ['occurredAt', 'createdAt'])]
 #[ORM\Entity]
 #[ORM\Table(name: 'outreach_activity')]
 #[ORM\Index(fields: ['type'], name: 'outreach_activity_type_idx')]

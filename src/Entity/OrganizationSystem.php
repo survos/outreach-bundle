@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -21,17 +22,24 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     security: "is_granted('ROLE_ADMIN')",
-    operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
+    operations: [
+        new Get(),
+        new GetCollection(parameters: [
+            'organization.id' => new QueryParameter(filter: new ExactFilter(), property: 'organization.id'),
+            'system' => new QueryParameter(filter: new ExactFilter(), property: 'system'),
+            'externalId' => new QueryParameter(filter: new PartialSearchFilter(), property: 'externalId'),
+            'url' => new QueryParameter(filter: new PartialSearchFilter(), property: 'url'),
+            'order[:property]' => new QueryParameter(filter: new SortFilter(), properties: ['system', 'id']),
+            // Explicit: the isPrimary() getter makes PropertyInfo call this property "primary", so :property expansion skips it.
+            'order[isPrimary]' => new QueryParameter(filter: new SortFilter(), property: 'isPrimary'),
+        ]),
+        new Post(),
+        new Patch(),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['organization_system:read']],
     denormalizationContext: ['groups' => ['organization_system:write']],
 )]
-#[ApiFilter(SearchFilter::class, properties: [
-    'organization.id' => 'exact',
-    'system' => 'exact',
-    'externalId' => 'partial',
-    'url' => 'partial',
-])]
-#[ApiFilter(OrderFilter::class, properties: ['system', 'isPrimary', 'id'])]
 #[ORM\Entity]
 #[ORM\Table(name: 'outreach_organization_system')]
 #[ORM\Index(fields: ['system'], name: 'outreach_org_system_type_idx')]

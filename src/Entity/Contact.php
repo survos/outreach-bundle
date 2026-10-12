@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -25,18 +26,23 @@ use Survos\FieldBundle\Attribute\EntityMeta;
 #[EntityMeta(icon: 'mdi:card-account-mail-outline', group: 'Outreach')]
 #[ApiResource(
     security: "is_granted('ROLE_ADMIN')",
-    operations: [new Get(), new GetCollection(), new Post(), new Patch(), new Delete()],
+    operations: [
+        new Get(),
+        new GetCollection(parameters: [
+            'organization.id' => new QueryParameter(filter: new ExactFilter(), property: 'organization.id'),
+            'firstName' => new QueryParameter(filter: new PartialSearchFilter(), property: 'firstName'),
+            'lastName' => new QueryParameter(filter: new PartialSearchFilter(), property: 'lastName'),
+            'email' => new QueryParameter(filter: new PartialSearchFilter(), property: 'email'),
+            'emailStatus' => new QueryParameter(filter: new ExactFilter(), property: 'emailStatus'),
+            'order[:property]' => new QueryParameter(filter: new SortFilter(), properties: ['lastName', 'firstName', 'email', 'createdAt', 'updatedAt']),
+        ]),
+        new Post(),
+        new Patch(),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['contact:read']],
     denormalizationContext: ['groups' => ['contact:write']],
 )]
-#[ApiFilter(SearchFilter::class, properties: [
-    'organization.id' => 'exact',
-    'firstName' => 'partial',
-    'lastName' => 'partial',
-    'email' => 'partial',
-    'emailStatus' => 'exact',
-])]
-#[ApiFilter(OrderFilter::class, properties: ['lastName', 'firstName', 'email', 'createdAt', 'updatedAt'])]
 #[ORM\Entity]
 #[ORM\Table(name: 'outreach_contact')]
 #[ORM\UniqueConstraint(name: 'outreach_contact_email_uq', columns: ['email'])]

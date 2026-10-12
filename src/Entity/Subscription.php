@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\DBAL\Types\Types;
@@ -28,14 +28,16 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[EntityMeta(icon: 'mdi:email-check-outline', group: 'Outreach')]
 #[ApiResource(
     security: "is_granted('ROLE_ADMIN')",
-    operations: [new Get(), new GetCollection()],
+    operations: [
+        new Get(),
+        new GetCollection(parameters: [
+            'contact.id' => new QueryParameter(filter: new ExactFilter(), property: 'contact.id'),
+            'audience.code' => new QueryParameter(filter: new ExactFilter(), property: 'audience.code'),
+            'status' => new QueryParameter(filter: new ExactFilter(), property: 'status'),
+        ]),
+    ],
     normalizationContext: ['groups' => ['subscription:read']],
 )]
-#[ApiFilter(SearchFilter::class, properties: [
-    'contact.id' => 'exact',
-    'audience.code' => 'exact',
-    'status' => 'exact',
-])]
 #[ORM\Entity]
 #[ORM\Table(name: 'outreach_subscription')]
 #[ORM\UniqueConstraint(name: 'outreach_subscription_uq', columns: ['contact_id', 'audience_code'])]
