@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
+use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\QueryParameter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Survos\FieldBundle\Attribute\EntityMeta;
@@ -104,13 +104,13 @@ final class Subscription
     }
 
     public bool $isSendable {
-        get => $this->status === SubscriptionStatus::ACTIVE;
+        get => SubscriptionStatus::ACTIVE === $this->status;
     }
 
     /** Idempotent: confirming twice (link scanners, retries) is a no-op. */
     public function confirm(): bool
     {
-        if ($this->status !== SubscriptionStatus::PENDING) {
+        if (SubscriptionStatus::PENDING !== $this->status) {
             return false;
         }
         $this->status = SubscriptionStatus::ACTIVE;
@@ -121,9 +121,11 @@ final class Subscription
 
     public function recordSend(): void
     {
-        if (!$this->isSendable) { throw new \LogicException("Permission is not active."); }
+        if (!$this->isSendable) {
+            throw new \LogicException('Permission is not active.');
+        }
         $this->lastSentAt = new \DateTimeImmutable();
-        if ($this->audience->kind === AudienceKind::ONE_TIME) {
+        if (AudienceKind::ONE_TIME === $this->audience->kind) {
             $this->status = SubscriptionStatus::USED;
         }
     }
@@ -131,7 +133,7 @@ final class Subscription
     /** Idempotent. Returns false when already unsubscribed, so callers log one Activity, not one per click. */
     public function unsubscribe(ConsentSource $source): bool
     {
-        if ($this->status === SubscriptionStatus::UNSUBSCRIBED) {
+        if (SubscriptionStatus::UNSUBSCRIBED === $this->status) {
             return false;
         }
         $this->status = SubscriptionStatus::UNSUBSCRIBED;

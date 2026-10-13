@@ -19,7 +19,7 @@ final class ConferenceRegistrantUpserter
     }
 
     /**
-     * @param array<string, mixed> $row
+     * @param array<string, mixed>           $row
      * @param array<int, string>|string|null $tags
      */
     public function upsert(array $row, array|string|null $tags = null, bool $flush = true, bool $dryRun = false): ConferenceRegistrantUpsertResult
@@ -31,18 +31,18 @@ final class ConferenceRegistrantUpserter
         $organizationName = $this->nullableString($normalized['organization'] ?? null);
         $email = $this->nullableString($normalized['email'] ?? null);
 
-        if ($organizationName === null && $email === null) {
+        if (null === $organizationName && null === $email) {
             throw new \InvalidArgumentException('Each registrant row needs at least an organization or an email.');
         }
 
         [$organization, $organizationCreated] = $this->resolveOrganization($organizationName, $email);
         [$contact, $contactCreated] = $this->resolveContact($organization, $firstName, $lastName, $email);
 
-        if ($organizationName !== null && $organization->getName() === '') {
+        if (null !== $organizationName && '' === $organization->getName()) {
             $organization->setName($organizationName);
         }
 
-        if ($organizationName !== null && $organization->getName() !== $organizationName) {
+        if (null !== $organizationName && $organization->getName() !== $organizationName) {
             $organization->setName($organizationName);
         }
 
@@ -89,9 +89,9 @@ final class ConferenceRegistrantUpserter
         $organization->setKey($key);
         $organization->setName($organizationName ?? $key);
 
-        $domain = $email !== null ? $this->organizationKeyGuesser->extractDomain($email) : null;
-        if ($domain !== null && !$this->organizationKeyGuesser->isPersonalDomain($domain)) {
-            $organization->setWebsite('https://' . $domain);
+        $domain = null !== $email ? $this->organizationKeyGuesser->extractDomain($email) : null;
+        if (null !== $domain && !$this->organizationKeyGuesser->isPersonalDomain($domain)) {
+            $organization->setWebsite('https://'.$domain);
         }
 
         return [$organization, true];
@@ -104,7 +104,7 @@ final class ConferenceRegistrantUpserter
     {
         $repository = $this->entityManager->getRepository(Contact::class);
 
-        if ($email !== null) {
+        if (null !== $email) {
             $existing = $repository->findOneBy(['email' => strtolower($email)]);
             if ($existing instanceof Contact) {
                 return [$existing, false];
@@ -127,11 +127,12 @@ final class ConferenceRegistrantUpserter
 
     /**
      * @param array<int, string>|string|null $tags
+     *
      * @return array<int, string>
      */
     private function normalizeTags(array|string|null $tags): array
     {
-        if ($tags === null) {
+        if (null === $tags) {
             return [];
         }
 
@@ -142,7 +143,7 @@ final class ConferenceRegistrantUpserter
         $normalized = [];
         foreach ($tags as $tag) {
             $tag = trim((string) $tag);
-            if ($tag !== '') {
+            if ('' !== $tag) {
                 $normalized[] = $tag;
             }
         }
@@ -154,6 +155,6 @@ final class ConferenceRegistrantUpserter
     {
         $value = trim((string) $value);
 
-        return $value !== '' ? $value : null;
+        return '' !== $value ? $value : null;
     }
 }

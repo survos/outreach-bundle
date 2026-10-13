@@ -7,10 +7,10 @@ namespace Survos\OutreachBundle;
 use Survos\Kit\AbstractSurvosBundle;
 use Survos\Kit\Traits\HasConfigurableRoutes;
 use Survos\Kit\Traits\HasDoctrineEntities;
-use Survos\OutreachBundle\Service\ConsentLinks;
-use Survos\OutreachBundle\Service\ConsentManager;
 use Survos\OutreachBundle\EventListener\OutreachImportConvertListener;
 use Survos\OutreachBundle\Service\ConferenceRegistrantUpserter;
+use Survos\OutreachBundle\Service\ConsentLinks;
+use Survos\OutreachBundle\Service\ConsentManager;
 use Survos\OutreachBundle\Service\OrganizationKeyGuesser;
 use Survos\OutreachBundle\Service\OutreachRowMapper;
 use Survos\OutreachBundle\Service\SendPolicy;
@@ -18,14 +18,16 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
-
 // Symfony\Component\HttpKernel\Bundle\Bundle <-- Flex auto-registration marker (see Survos\Kit\AbstractSurvosBundle)
 final class SurvosOutreachBundle extends AbstractSurvosBundle
 {
     use HasConfigurableRoutes;
     use HasDoctrineEntities;
 
-    protected function doctrineAlias(): string { return 'Outreach'; }
+    protected function doctrineAlias(): string
+    {
+        return 'Outreach';
+    }
 
     protected string $extensionAlias = 'survos_outreach';
 
@@ -66,7 +68,7 @@ final class SurvosOutreachBundle extends AbstractSurvosBundle
 
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $entityDir = \dirname(__DIR__) . '/src/Entity';
+        $entityDir = \dirname(__DIR__).'/src/Entity';
 
         parent::prependExtension($container, $builder);
 
@@ -109,7 +111,7 @@ final class SurvosOutreachBundle extends AbstractSurvosBundle
             ->arg('$routePrefix', $config['route_prefix']);
 
         if (class_exists(\Survos\TablerBundle\Event\MenuEvent::class)) {
-            $services->set(\Survos\OutreachBundle\Menu\OutreachMenuSubscriber::class)
+            $services->set(Menu\OutreachMenuSubscriber::class)
                 ->autowire()
                 ->autoconfigure();
         }

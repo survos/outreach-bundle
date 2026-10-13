@@ -39,7 +39,8 @@ final class OutreachRowMapper
 
     /**
      * @param array<string, mixed> $row
-     * @param array<int, string> $tags
+     * @param array<int, string>   $tags
+     *
      * @return array<string, mixed>
      */
     public function normalizeRow(array $row, array $tags = []): array
@@ -57,7 +58,7 @@ final class OutreachRowMapper
                 }
 
                 $value = $this->normalizeValue($normalized[$alias]);
-                if ($value !== null) {
+                if (null !== $value) {
                     $mapped[$target] = $value;
                     break;
                 }
@@ -67,7 +68,7 @@ final class OutreachRowMapper
         $rowTags = $this->extractTags($normalized['tags'] ?? null);
         $eventTags = $this->filterTags($tags);
         $mergedTags = array_values(array_unique(array_merge($rowTags, $eventTags)));
-        if ($mergedTags !== []) {
+        if ([] !== $mergedTags) {
             sort($mergedTags);
             $mapped['tags'] = $mergedTags;
         }
@@ -87,12 +88,14 @@ final class OutreachRowMapper
     {
         if (is_string($value)) {
             $value = trim($value);
-            return $value !== '' ? $value : null;
+
+            return '' !== $value ? $value : null;
         }
 
         if (is_scalar($value)) {
             $string = trim((string) $value);
-            return $string !== '' ? $string : null;
+
+            return '' !== $string ? $string : null;
         }
 
         if (is_array($value)) {
@@ -104,6 +107,7 @@ final class OutreachRowMapper
 
     /**
      * @param array<int, string> $tags
+     *
      * @return array<int, string>
      */
     private function filterTags(array $tags): array
@@ -111,7 +115,7 @@ final class OutreachRowMapper
         $filtered = [];
         foreach ($tags as $tag) {
             $tag = trim((string) $tag);
-            if ($tag === '' || $tag === 'outreach' || str_starts_with($tag, 'format:') || str_starts_with($tag, 'source:')) {
+            if ('' === $tag || 'outreach' === $tag || str_starts_with($tag, 'format:') || str_starts_with($tag, 'source:')) {
                 continue;
             }
             $filtered[] = $tag;
@@ -127,14 +131,15 @@ final class OutreachRowMapper
     {
         if (is_string($value)) {
             $parts = array_map('trim', explode(',', $value));
-            return array_values(array_filter($parts, static fn (string $tag): bool => $tag !== ''));
+
+            return array_values(array_filter($parts, static fn (string $tag): bool => '' !== $tag));
         }
 
         if (is_array($value)) {
             $tags = [];
             foreach ($value as $tag) {
                 $tag = trim((string) $tag);
-                if ($tag !== '') {
+                if ('' !== $tag) {
                     $tags[] = $tag;
                 }
             }

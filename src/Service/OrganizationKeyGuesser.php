@@ -24,19 +24,19 @@ final class OrganizationKeyGuesser
         $email = $this->cleanString($email);
         $organizationName = $this->cleanString($organizationName);
 
-        $domain = $email !== null ? $this->extractDomain($email) : null;
-        if ($domain !== null && !$this->isPersonalDomain($domain)) {
+        $domain = null !== $email ? $this->extractDomain($email) : null;
+        if (null !== $domain && !$this->isPersonalDomain($domain)) {
             return sprintf('%s:%s', $this->domainKeyPrefix, $domain);
         }
 
-        if ($organizationName !== null) {
+        if (null !== $organizationName) {
             $slug = strtolower($this->slugger->slug($organizationName)->toString());
-            if ($slug !== '') {
+            if ('' !== $slug) {
                 return sprintf('%s:%s', $this->organizationKeyPrefix, $slug);
             }
         }
 
-        if ($domain !== null) {
+        if (null !== $domain) {
             return sprintf('%s:%s', $this->domainKeyPrefix, $domain);
         }
 
@@ -51,14 +51,14 @@ final class OrganizationKeyGuesser
     public function extractDomain(string $email): ?string
     {
         $email = strtolower(trim($email));
-        if ($email === '' || !str_contains($email, '@')) {
+        if ('' === $email || !str_contains($email, '@')) {
             return null;
         }
 
         $domain = substr($email, (int) strrpos($email, '@') + 1);
         $domain = trim($domain);
 
-        return $domain !== '' ? $domain : null;
+        return '' !== $domain ? $domain : null;
     }
 
     /**
@@ -74,12 +74,12 @@ final class OrganizationKeyGuesser
 
     private function cleanString(?string $value): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
         $value = trim($value);
 
-        return $value !== '' ? $value : null;
+        return '' !== $value ? $value : null;
     }
 }

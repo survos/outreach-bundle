@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Survos\OutreachBundle\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\QueryParameter;
-use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
-use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\QueryParameter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Survos\FieldBundle\Attribute\EntityMeta;
 use Survos\OutreachBundle\Entity\Enum\ActivityDirection;
 use Survos\OutreachBundle\Entity\Enum\ActivityType;
 use Survos\OutreachBundle\Entity\Traits\TaggableTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Survos\FieldBundle\Attribute\EntityMeta;
 
 #[EntityMeta(icon: 'mdi:timeline-outline', group: 'Outreach')]
 #[ApiResource(
@@ -174,7 +174,7 @@ class Activity
 
     public function setSubject(?string $subject): void
     {
-        $this->subject = $subject !== null ? trim($subject) : null;
+        $this->subject = null !== $subject ? trim($subject) : null;
     }
 
     public function getBody(): ?string
@@ -184,7 +184,7 @@ class Activity
 
     public function setBody(?string $body): void
     {
-        $this->body = $body !== null ? trim($body) : null;
+        $this->body = null !== $body ? trim($body) : null;
     }
 
     public function getOutcome(): ?string
@@ -194,7 +194,7 @@ class Activity
 
     public function setOutcome(?string $outcome): void
     {
-        $this->outcome = $outcome !== null ? trim($outcome) : null;
+        $this->outcome = null !== $outcome ? trim($outcome) : null;
     }
 
     public function getPerformedBy(): ?string
@@ -204,7 +204,7 @@ class Activity
 
     public function setPerformedBy(?string $performedBy): void
     {
-        $this->performedBy = $performedBy !== null ? trim($performedBy) : null;
+        $this->performedBy = null !== $performedBy ? trim($performedBy) : null;
     }
 
     public function getExternalId(): ?string
@@ -214,7 +214,7 @@ class Activity
 
     public function setExternalId(?string $externalId): void
     {
-        $this->externalId = $externalId !== null ? trim($externalId) : null;
+        $this->externalId = null !== $externalId ? trim($externalId) : null;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

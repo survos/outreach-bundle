@@ -24,7 +24,7 @@ final class OutreachImportConvertListener implements EventSubscriberInterface
 
     public function onImportConvertRow(ImportConvertRowEvent $event): void
     {
-        if ($event->row === null || !$this->rowMapper->shouldNormalizeForTags($event->tags)) {
+        if (null === $event->row || !$this->rowMapper->shouldNormalizeForTags($event->tags)) {
             return;
         }
 

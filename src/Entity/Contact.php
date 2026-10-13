@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\QueryParameter;
-use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
-use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\QueryParameter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Survos\FieldBundle\Attribute\EntityMeta;
 use Survos\OutreachBundle\Entity\Enum\ContactEmailStatus;
 use Survos\OutreachBundle\Entity\Traits\TaggableTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Survos\FieldBundle\Attribute\EntityMeta;
 
 #[EntityMeta(icon: 'mdi:card-account-mail-outline', group: 'Outreach')]
 #[ApiResource(
@@ -143,7 +143,7 @@ class Contact
 
     public function setFirstName(?string $firstName): void
     {
-        $this->firstName = $firstName !== null ? trim($firstName) : null;
+        $this->firstName = null !== $firstName ? trim($firstName) : null;
     }
 
     public function getLastName(): ?string
@@ -153,7 +153,7 @@ class Contact
 
     public function setLastName(?string $lastName): void
     {
-        $this->lastName = $lastName !== null ? trim($lastName) : null;
+        $this->lastName = null !== $lastName ? trim($lastName) : null;
     }
 
     public function getFullName(): string
@@ -168,7 +168,7 @@ class Contact
 
     public function setJobTitle(?string $jobTitle): void
     {
-        $this->jobTitle = $jobTitle !== null ? trim($jobTitle) : null;
+        $this->jobTitle = null !== $jobTitle ? trim($jobTitle) : null;
     }
 
     public function getEmail(): ?string
@@ -178,7 +178,7 @@ class Contact
 
     public function setEmail(?string $email): void
     {
-        $this->email = $email !== null ? strtolower(trim($email)) : null;
+        $this->email = null !== $email ? strtolower(trim($email)) : null;
     }
 
     public function getPhone(): ?string
@@ -188,7 +188,7 @@ class Contact
 
     public function setPhone(?string $phone): void
     {
-        $this->phone = $phone !== null ? trim($phone) : null;
+        $this->phone = null !== $phone ? trim($phone) : null;
     }
 
     public function getPreferredContact(): ?string
@@ -198,7 +198,7 @@ class Contact
 
     public function setPreferredContact(?string $preferredContact): void
     {
-        $this->preferredContact = $preferredContact !== null ? trim($preferredContact) : null;
+        $this->preferredContact = null !== $preferredContact ? trim($preferredContact) : null;
     }
 
     public function getEmailStatus(): ContactEmailStatus
@@ -218,7 +218,7 @@ class Contact
 
     public function setNotes(?string $notes): void
     {
-        $this->notes = $notes !== null ? trim($notes) : null;
+        $this->notes = null !== $notes ? trim($notes) : null;
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -249,6 +249,6 @@ class Contact
     {
         $fullName = $this->getFullName();
 
-        return $fullName !== '' ? $fullName : (string) ($this->email ?? 'contact');
+        return '' !== $fullName ? $fullName : (string) ($this->email ?? 'contact');
     }
 }

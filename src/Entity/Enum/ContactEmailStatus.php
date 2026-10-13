@@ -21,6 +21,6 @@ enum ContactEmailStatus: string
 
     public function suppressesAll(): bool
     {
-        return $this === self::DO_NOT_EMAIL || $this === self::BOUNCED;
+        return self::DO_NOT_EMAIL === $this || self::BOUNCED === $this;
     }
 }

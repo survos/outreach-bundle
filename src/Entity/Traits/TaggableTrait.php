@@ -24,13 +24,13 @@ trait TaggableTrait
             $tags,
         ))));
 
-        $this->tags = $tags === [] ? null : $tags;
+        $this->tags = [] === $tags ? null : $tags;
     }
 
     public function addTag(string $tag): void
     {
         $tag = trim($tag);
-        if ($tag === '') {
+        if ('' === $tag) {
             return;
         }
 

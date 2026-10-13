@@ -1,9 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Survos\OutreachBundle\Entity\{Audience, Contact, Subscription};
-use Survos\OutreachBundle\Entity\Enum\{AudienceKind, ConsentSource};
+use Survos\OutreachBundle\Entity\Audience;
+use Survos\OutreachBundle\Entity\Contact;
+use Survos\OutreachBundle\Entity\Enum\AudienceKind;
+use Survos\OutreachBundle\Entity\Enum\ConsentSource;
+use Survos\OutreachBundle\Entity\Subscription;
 use Survos\OutreachBundle\Service\ConsentLinks;
 
 final class ConsentTest extends TestCase
@@ -14,6 +18,7 @@ final class ConsentTest extends TestCase
         $contact->setEmail('reader@example.org');
         $subscription = new Subscription($contact, new Audience('pressia-updates', AudienceKind::ANNOUNCEMENTS), ConsentSource::SIGNUP_FORM);
         (new ReflectionProperty(Subscription::class, 'id'))->setValue($subscription, 42);
+
         return $subscription;
     }
 

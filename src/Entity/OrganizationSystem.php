@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\QueryParameter;
-use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
-use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\QueryParameter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Survos\OutreachBundle\Entity\Enum\OrganizationSystemType;
@@ -110,7 +110,7 @@ class OrganizationSystem
 
     public function setUrl(?string $url): void
     {
-        $this->url = $url !== null ? trim($url) : null;
+        $this->url = null !== $url ? trim($url) : null;
     }
 
     public function getExternalId(): ?string
@@ -120,7 +120,7 @@ class OrganizationSystem
 
     public function setExternalId(?string $externalId): void
     {
-        $this->externalId = $externalId !== null ? trim($externalId) : null;
+        $this->externalId = null !== $externalId ? trim($externalId) : null;
     }
 
     public function isPrimary(): bool
@@ -140,6 +140,6 @@ class OrganizationSystem
 
     public function setNotes(?string $notes): void
     {
-        $this->notes = $notes !== null ? trim($notes) : null;
+        $this->notes = null !== $notes ? trim($notes) : null;
     }
 }

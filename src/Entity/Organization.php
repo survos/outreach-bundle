@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Survos\OutreachBundle\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
+use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SortFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\QueryParameter;
-use ApiPlatform\Doctrine\Orm\Filter\PartialSearchFilter;
-use ApiPlatform\Doctrine\Orm\Filter\ExactFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\QueryParameter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Survos\FieldBundle\Attribute\EntityMeta;
+use Survos\FieldBundle\Attribute\Field;
 use Survos\OutreachBundle\Entity\Enum\OrganizationStatus;
 use Survos\OutreachBundle\Entity\Traits\TaggableTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Survos\FieldBundle\Attribute\EntityMeta;
-use Survos\FieldBundle\Attribute\Field;
 
 #[EntityMeta(icon: 'mdi:domain', group: 'Outreach')]
 #[ApiResource(
@@ -159,7 +159,7 @@ class Organization
 
     public function setWebsite(?string $website): void
     {
-        $this->website = $website !== null ? trim($website) : null;
+        $this->website = null !== $website ? trim($website) : null;
     }
 
     public function getCity(): ?string
@@ -169,7 +169,7 @@ class Organization
 
     public function setCity(?string $city): void
     {
-        $this->city = $city !== null ? trim($city) : null;
+        $this->city = null !== $city ? trim($city) : null;
     }
 
     public function getStateProvince(): ?string
@@ -179,7 +179,7 @@ class Organization
 
     public function setStateProvince(?string $stateProvince): void
     {
-        $this->stateProvince = $stateProvince !== null ? trim($stateProvince) : null;
+        $this->stateProvince = null !== $stateProvince ? trim($stateProvince) : null;
     }
 
     public function getCountryCode(): ?string
@@ -189,7 +189,7 @@ class Organization
 
     public function setCountryCode(?string $countryCode): void
     {
-        $this->countryCode = $countryCode !== null ? strtoupper(trim($countryCode)) : null;
+        $this->countryCode = null !== $countryCode ? strtoupper(trim($countryCode)) : null;
     }
 
     public function getStatus(): ?OrganizationStatus
@@ -209,7 +209,7 @@ class Organization
 
     public function setNotes(?string $notes): void
     {
-        $this->notes = $notes !== null ? trim($notes) : null;
+        $this->notes = null !== $notes ? trim($notes) : null;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

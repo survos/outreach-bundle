@@ -35,17 +35,19 @@ final class OutreachImportJsonlCommand
     ): int {
         if (!is_file($input)) {
             $io->error(sprintf('File not found: %s', $input));
+
             return Command::FAILURE;
         }
 
         if ($batchSize < 1) {
             $io->error('--batch-size must be >= 1');
+
             return Command::FAILURE;
         }
 
         $io->title('Outreach JSONL Import');
         $io->text(sprintf('Input: %s', $input));
-        if ($tag !== []) {
+        if ([] !== $tag) {
             $io->text(sprintf('Tags: %s', implode(', ', $tag)));
         }
         if ($dryRun) {
@@ -62,14 +64,14 @@ final class OutreachImportJsonlCommand
                 continue;
             }
 
-            $processed++;
-            $shouldFlush = !$dryRun && ($processed % $batchSize === 0);
+            ++$processed;
+            $shouldFlush = !$dryRun && (0 === $processed % $batchSize);
             $result = $this->upserter->upsert($row, $tag, $shouldFlush && !$dryRun, $dryRun);
 
             $orgCreated += $result->organizationCreated ? 1 : 0;
             $contactCreated += $result->contactCreated ? 1 : 0;
 
-            if ($limit !== null && $processed >= $limit) {
+            if (null !== $limit && $processed >= $limit) {
                 break;
             }
         }

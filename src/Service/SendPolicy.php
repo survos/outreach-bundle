@@ -23,20 +23,20 @@ final class SendPolicy
 
     public function canSend(Contact $contact, Audience $audience): bool
     {
-        return $this->whyNot($contact, $audience) === null;
+        return null === $this->whyNot($contact, $audience);
     }
 
     /** Null when sending is allowed, otherwise a reason fit for logs and the admin UI. */
     public function whyNot(Contact $contact, Audience $audience): ?string
     {
-        if ($contact->getEmail() === null) {
+        if (null === $contact->getEmail()) {
             return 'no email address';
         }
         if ($contact->getEmailStatus()->suppressesAll()) {
             return sprintf('contact is %s', $contact->getEmailStatus()->value);
         }
         $subscription = $this->subscription($contact, $audience);
-        if ($subscription === null) {
+        if (null === $subscription) {
             return sprintf('no permission for %s', $audience->code);
         }
         if (!$subscription->isSendable) {

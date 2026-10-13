@@ -15,15 +15,18 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 class OutreachMenuSubscriber extends AbstractAdminMenuSubscriber
 {
-    protected function getLabel(): string { return 'Outreach'; }
+    protected function getLabel(): string
+    {
+        return 'Outreach';
+    }
 
     protected function getResourceClasses(): array
     {
         return [
             'Organizations' => Organization::class,
-            'Contacts'      => Contact::class,
-            'Activities'    => Activity::class,
-            'Audiences'     => Audience::class,
+            'Contacts' => Contact::class,
+            'Activities' => Activity::class,
+            'Audiences' => Audience::class,
             'Subscriptions' => Subscription::class,
         ];
     }
