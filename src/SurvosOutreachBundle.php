@@ -110,7 +110,7 @@ final class SurvosOutreachBundle extends AbstractSurvosBundle
             ->arg('$publicBaseUrl', $config['public_base_url'])
             ->arg('$routePrefix', $config['route_prefix']);
 
-        if (class_exists(\Survos\TablerBundle\Event\MenuEvent::class)) {
+        if (class_exists(\Survos\TablerBundle\Menu\AbstractAdminMenuSubscriber::class)) {
             $services->set(Menu\OutreachMenuSubscriber::class)
                 ->autowire()
                 ->autoconfigure();
