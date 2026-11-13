@@ -24,11 +24,6 @@ final class SurvosOutreachBundle extends AbstractSurvosBundle
     use HasConfigurableRoutes;
     use HasDoctrineEntities;
 
-    protected function doctrineAlias(): string
-    {
-        return 'Outreach';
-    }
-
     protected string $extensionAlias = 'survos_outreach';
 
     public function getPath(): string
